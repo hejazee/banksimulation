@@ -17,7 +17,7 @@ CONSOLE_ALT = {
     msg += "\n\n" + jQuery.makeArray(arguments).join("\n");
     alert(msg);
   }
-}
+};
 if (typeof(console) == 'undefined') {
   console = CONSOLE_ALT;
 }
@@ -49,7 +49,8 @@ function generateRandomTable() {
   prev_time = 0,
   samp_time = 0, //temp
   duration = $('#duration').val(),
-  customer_count = getRandomInt(Math.floor(duration / 3), duration);
+  customer_count = getRandomInt(Math.floor(duration / 3), duration),
+  max_time;
   
   for (var i = 1; i <= customer_count; i++) {
     //we want to generate a random time. it should be in the selected time span.
@@ -138,7 +139,7 @@ CustomerState = {
 function Teller(id) {
   this.tellerid = id; //Should be set by caller
   this.state = TellerState.Free;
-  this.customerid = TellerManager.increase();
+  this.customerid = TellerManager.increase(id);
   
   //@internal
   this.lastChangeTime = time();
@@ -161,7 +162,8 @@ function Teller(id) {
     this.lastChangeTime = time();
     this.state = TellerState.Busy;
     this.customerid = customerid;
-  }
+    return true;
+  };
   
   /**
    * Set teller state to free (waiting for next customer)
@@ -179,7 +181,8 @@ function Teller(id) {
     this.lastChangeTime = time();
     this.state = TellerState.Free;
     this.customerid = TellerManager.increase();
-  }
+    return true;
+  };
   
   /**
    * Get total free time of the teller
@@ -191,7 +194,7 @@ function Teller(id) {
     }
     
     return curr + this.totalFreeTime;
-  }
+  };
   
   /**
    * Get total busy time of the teller
@@ -203,7 +206,7 @@ function Teller(id) {
     }
     
     return curr + this.totalBusyTime;
-  }
+  };
 }
 
 /**
@@ -224,7 +227,7 @@ function Customer() {
   this.setStateInService = function() {
     this.inServiceTime = time();
     this.state = CustomerState.InService;
-  }
+  };
   
   /**
    * Set state to FinishedJob
@@ -232,14 +235,14 @@ function Customer() {
   this.setStateFinishedJob = function() {
     this.exitTime = time();
     this.state = CustomerState.FinishedJob;
-  }
+  };
   
   /**
    * Get total wait time
    */ 
   this.getTotalWaitTime = function() {
     return this.inServiceTime - this.enterTime;
-  }
+  };
 }
 
 /**
@@ -247,8 +250,8 @@ function Customer() {
  */
 SystemState = {
   'queue' : new Queue(), //of customers
-  'tellers' : new Array(), //of tellers
-}
+  'tellers' : new Array() //of tellers
+};
 
 /**
  * Start the simulation process
@@ -258,7 +261,7 @@ function start_simulate() {
   var duration = Number($('#duration').val())
   , arrivaltable = $('#arrivaltable').val()
   , responsetimeave = Number($('#responsetimeave').val())
-  , tellerscount = Number($('#responsetimeave').val())
+  , tellerscount = Number($('#tellerscount').val())
   ;
   
   arrivaltable = str_replace("\r", "\n", arrivaltable);
