@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <title>Bank Simulation</title>
+
+  <!-- libraries -->
+  <script type="text/javascript" src="lib/jquery-2.0.3.min.js"></script>
+  <script type="text/javascript" src="lib/jquery-ui-1.10.3/ui/minified/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="lib/Queue.js"></script>
+  
+  <script type="text/javascript" src="lib/phpjs/functions/strings/explode.js"></script>
+  <script type="text/javascript" src="lib/phpjs/functions/strings/str_replace.js"></script>
+  <script type="text/javascript" src="lib/phpjs/functions/datetime/time.js"></script>
+  <!--
+  <script type="text/javascript" src="lib/phpjs/functions/array/array_push.js"></script>
+  <script type="text/javascript" src="lib/phpjs/functions/array/array_pop.js"></script>
+  -->
+  
+  <!-- my codes -->
+  <script type="text/javascript" src="scripts/BankSimulator.js"></script>
+
+  <!-- styles -->
+  <link rel="stylesheet" type="text/css" href="lib/jquery-ui-1.10.3/themes/base/jquery.ui.all.css" />
+
+  <link rel="stylesheet" type="text/css" href="styles/style.css" />
+</head>
+<body>
+  <div id="wrapper">
+    <div id="settings">
+      <label for="duration">Duration: </label>
+      <input type="text" name="duration" id="duration" value="60" /> minutes
+      <br />
+
+      <label for="arrivaltable">Customers arrival table: </label><br />
+      <textarea id="arrivaltable" name="arrivaltable" rows="30" cols="30">5
+7
+8
+9
+10
+11
+15
+17
+19
+25
+26
+27
+28
+29
+36
+37
+38
+39
+40
+41
+45
+47
+53
+54
+55
+56
+57
+58
+59</textarea><br />
+      <button id="generaterandom">Generate random data</button><br />
+      
+      <label for="responsetimeave">Average response time: </label><br />
+      <input type="text" name="responsetimeave" id="responsetimeave" value="5" /> minutes.<br />
+      
+      <label for="tellerscount">Count of tellers: </label><br />
+      <input type="text" name="tellerscount" id="tellerscount" value="3" /><br /><br />
+      
+      <button id="startsimulate">Start simulation</button>
+    </div>
+    <div id="results">
+    
+    </div>
+  </div>
+</body>
+</html>
