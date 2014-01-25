@@ -225,6 +225,10 @@ TellerManager = {
     LOG.debug('called TellerManager.createTeller()');
     var teller = new Teller(this.tellers.length + 1);
     this.tellers.push(teller);
+
+    //Log create teller
+    SystemState_log(SystemStateLogTypes.TellerManager.CreateTeller, "Teller created");
+    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "Teller id: " + teller.tellerid);
   },
 
   /**
@@ -256,6 +260,7 @@ TellerManager = {
         result.push(teller1);
       }
     });
+
     return result;
   },
 
@@ -284,6 +289,11 @@ TellerManager = {
 
   'increaseNumber' : function() {
     LOG.debug('called TellerManager.increaseNumber()');
+
+    //Log create teller
+    SystemState_log(SystemStateLogTypes.TellerManager.Increase, "Speaker calls new customer.");
+    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "New number: " + this.lastnumber + 1);
+
     return ++this.lastnumber;
   }
 };
