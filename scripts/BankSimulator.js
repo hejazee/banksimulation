@@ -349,6 +349,16 @@ function Teller(id) {
     this.lastChangeTime = CLOCK;
     this.state = TellerState.Busy;
     this.customerid = customerid;
+
+    //Log Tellers becomes busy
+    SystemState_log(SystemStateLogTypes.Teller.StateBusy, "Teller becomes busy.");
+    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "Teller id: " + this.tellerid);
+    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "Accepted customer id: " + customerid);
+    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "Total free time is: " +
+        this.getTotalFreeTime() + ' minutes.');
+    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "Total busy time is: " +
+        this.getTotalBusyTime() + ' minutes.');
+
     return true;
   };
   
@@ -368,6 +378,17 @@ function Teller(id) {
     this.lastChangeTime = CLOCK;
     this.state = TellerState.Free;
     this.customerid = TellerManager.increaseNumber();
+
+    //Log Tellers becomes free
+    SystemState_log(SystemStateLogTypes.Teller.StateFree, "Teller becomes free.");
+    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "Teller id: " + this.tellerid);
+    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "Now can accept customer id: " +
+        this.customerid);
+    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "Total free time is: " +
+        this.getTotalFreeTime() + ' minutes.');
+    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "Total busy time is: " +
+        this.getTotalBusyTime() + ' minutes.');
+
     return true;
   };
   
