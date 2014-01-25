@@ -123,6 +123,7 @@ CustomerState = {
 /**
  * Enum: System State Logging service.
  */
+SystemStateLog = [];
 SystemStateLogTypes = {
   'Customer' : {
     'Enter' : 'customer_enter', //new customer enters.
@@ -138,7 +139,7 @@ SystemStateLogTypes = {
     'StateFree' : 'teller_state_free' //Teller becomes free.
   },
   'Queue' : {
-    'log' : 'queue_log' //just logging customer queue state.
+    'Log' : 'queue_log' //just logging customer queue state.
   },
   'NumberingMachine' : {
     'Increase' : 'numberingmachine_increase' //customer gets new number from numbering machine.
@@ -148,6 +149,20 @@ SystemStateLogTypes = {
     'Finish' : 'simulation_finish' // simulation finished.
   }
 };
+
+/**
+ * Log a new system state message.
+ * this log will later be rendered for display.
+ */
+function SystemState_log(type, msg) {
+  if (typeof(SystemStateLog[CLOCK]) == 'undefined') {
+    SystemStateLog[CLOCK] = [];
+  }
+  SystemStateLog[CLOCK][SystemStateLog[CLOCK].length] = {
+    'message' : msg,
+    'type' : type
+  };
+}
 
 /**
  * Get random integer number
@@ -426,6 +441,7 @@ CustomerQueue = new Queue();
  */
 function start_simulate() {
   SIMULATION_STARTED = true;
+  SystemState_log(SystemStateLogTypes.SimulationEngine.Start, 'Simulation started');
 
   //Initialize variables
   var duration = Number($('#duration').val())
@@ -513,8 +529,8 @@ function start_simulate() {
         break;
       }
     }
-
-    // now take a snapshot of system
-    //mabe this shold be done on every change.
   }
+
+  SystemState_log(SystemStateLogTypes.SimulationEngine.Finish, 'Simulation finished.');
+  RenderingEngine.render(SystemStateLog);
 }
