@@ -292,7 +292,7 @@ TellerManager = {
 
     //Log increase number
     SystemState_log(SystemStateLogTypes.TellerManager.Increase, "Speaker calls new customer.");
-    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "New number: " + this.lastnumber + 1);
+    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "New number: " + (this.lastnumber + 1));
 
     return ++this.lastnumber;
   }
@@ -315,7 +315,7 @@ NumberingMachine = {
 
     //Log increase
     SystemState_log(SystemStateLogTypes.NumberingMachine.Increase, "Numbering machine generated new number.");
-    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "New number: " + this.number + 1);
+    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "New number: " + (this.number + 1));
 
     return ++this.number;
   }
