@@ -1,5 +1,13 @@
 RenderingEngine = {
   'render' : function(log) {
+    //LOG.warn(print_r(log, true));
+    //LOG.warn(print_r(log[0][0], true));
+    log.forEach(function(item1) {
+      item1.forEach(function(item2) {
+        LOG.warn(print_r(item2['message'], true));
+      })
+    });
+    /*
     switch (type) {
       case SystemStateLogTypes.Customer.Enter:
 
@@ -38,5 +46,6 @@ RenderingEngine = {
 
         break;
     }
+    */
   }
 };
