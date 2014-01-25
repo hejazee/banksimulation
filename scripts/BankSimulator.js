@@ -290,7 +290,7 @@ TellerManager = {
   'increaseNumber' : function() {
     LOG.debug('called TellerManager.increaseNumber()');
 
-    //Log create teller
+    //Log increase number
     SystemState_log(SystemStateLogTypes.TellerManager.Increase, "Speaker calls new customer.");
     SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "New number: " + this.lastnumber + 1);
 
@@ -312,6 +312,11 @@ NumberingMachine = {
   
   'increase' : function() {
     LOG.debug('called NumberingMachine.increase()');
+
+    //Log increase
+    SystemState_log(SystemStateLogTypes.NumberingMachine.Increase, "Numbering machine generated new number.");
+    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "New number: " + this.number + 1);
+
     return ++this.number;
   }
 };
