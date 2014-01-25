@@ -173,7 +173,7 @@ function getRandomInt (min, max) {
 }
 
 /**
- * Generate and insert random table into the textarea
+ * Generate and insert random table into the text area
  */
 function generateRandomTable() {
   var table_str = '',
@@ -265,11 +265,6 @@ TellerManager = {
   'getWaitingNumbers' : function() {
     LOG.debug('called TellerManager.getWaitingNumbers()');
     var result = [];
-    //for (var teller1 in this.tellers) {
-    //  if (teller1.state == TellerState.Free) {
-    //    result.push(teller1.customerid);
-    //  }
-    //}
     this.tellers.forEach(function(teller1) {
       if (teller1.state == TellerState.Free) {
         result.push(teller1.customerid);
@@ -285,7 +280,6 @@ TellerManager = {
     LOG.debug('called TellerManager.searchForWaitingCustomer(' + customerid + ')');
     var waitingNumbers = this.getWaitingNumbers();
     return (waitingNumbers.indexOf(customerid) >= 0);
-    //return(typeof(waitingNumbers[customerid]) != 'undefined');
   },
 
   'increaseNumber' : function() {
@@ -495,7 +489,7 @@ function start_simulate() {
       customer = new Customer();
       CustomerQueue.enqueue(customer);
       
-      //customer has entered. remove it from arrivale table queue.
+      //customer has entered. remove it from arrival table queue.
       arrivalTableQueue.dequeue();
     }
 
