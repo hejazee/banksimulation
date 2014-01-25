@@ -23,7 +23,7 @@ RenderingEngine = {
 
         break;
       case SystemStateLogTypes.Queue.Log:
-
+        //argument is a Queue object
         break;
       case SystemStateLogTypes.NumberingMachine.Increase:
 
