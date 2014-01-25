@@ -146,7 +146,8 @@ SystemStateLogTypes = {
   },
   'SimulationEngine' : {
     'Start' : 'simulation_start', //simulation started.
-    'Finish' : 'simulation_finish' // simulation finished.
+    'Finish' : 'simulation_finish', //simulation finished.
+    'Log' : 'simulation_log' //a new log entry. this is related to previous log entry and provides additional data.
   }
 };
 
@@ -413,6 +414,12 @@ function Customer() {
   this.setStateInService = function() {
     this.inServiceTime = CLOCK;
     this.state = CustomerState.InService;
+
+    //Log customer gets service
+    SystemState_log(SystemStateLogTypes.Customer.GetService, "Customer gets service");
+    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "Customer id: " + this.customerid);
+    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "Customer total wait time: " +
+        this.getTotalWaitTime());
   };
   
   /**
@@ -421,6 +428,12 @@ function Customer() {
   this.setStateFinishedJob = function() {
     this.exitTime = CLOCK;
     this.state = CustomerState.FinishedJob;
+
+    //Log customer leaves the bank
+    SystemState_log(SystemStateLogTypes.Customer.Exit, "Customer leaves the bank.");
+    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "Customer id: " + this.customerid);
+    SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "Customer leaved the bank after: " +
+        (this.exitTime - this.enterTime) + ' minutes.');
   };
   
   /**
@@ -429,6 +442,12 @@ function Customer() {
   this.getTotalWaitTime = function() {
     return this.inServiceTime - this.enterTime;
   };
+
+  //Log Customer enters the bank
+  SystemState_log(SystemStateLogTypes.Customer.Enter, "New customer entered bank");
+  SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "Customer id: " + this.customerid);
+  //Log Queue
+  SystemState_log(SystemStateLogTypes.Queue.Log, CustomerQueue);
 }
 
 /**
@@ -459,10 +478,6 @@ function start_simulate() {
   for (var i = 0; i < arrivaltable.length; i++) {
     arrivalTableQueue.enqueue(arrivaltable[i]);
   }
-  
-  //store snapshots of the system state whenever a new event occurs.
-  //this will produce a complete history of the system.
-  var snapshots = [];
   
   //Initialize tellers.
   for (var tellerid = 1; tellerid <= tellerscount; tellerid++) {
