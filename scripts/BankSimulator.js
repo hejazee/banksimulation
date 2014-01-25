@@ -6,7 +6,18 @@
     //Generate random date for customer arrival table on load and on click
     //generateRandomTable();
     $('#generaterandom').click(generateRandomTable);
-    $('#startsimulate').click(start_simulate);
+    $('#startsimulate').click(function() {
+      if (SIMULATION_STARTED) {
+        if (confirm("This will reload the page to prepare a fresh state.\n" +
+            "You should click this button again after reload. \n" +
+            "Are you sure?")) {
+          location.reload();
+        }
+      }
+      else {
+        start_simulate();
+      }
+    });
   });
 })(jQuery);
 
@@ -77,6 +88,22 @@ LOG = {
 };
 
 /**
+ * Global CLOCK (for time tracking)
+ * stores simulated time in minutes
+ */
+CLOCK = 0;
+
+/**
+ * Indicates whether simulation has been started.
+ */
+SIMULATION_STARTED = false;
+
+/**
+ * Holds all customers that have been created (entered the bank).
+ */
+AllCustomers = [];
+
+/**
  * Enum TellerState
  */
 TellerState = {
@@ -91,6 +118,35 @@ CustomerState = {
   'WaitingForService' : 0,
   'InService' : 1,
   'FinishedJob' : 2
+};
+
+/**
+ * Enum: System State Logging service.
+ */
+SystemStateLogTypes = {
+  'Customer' : {
+    'Enter' : 'customer_enter', //new customer enters.
+    'GetService' : 'customer_getservice', //customer gets service.
+    'Exit' : 'customer_exit' //customer's job is finished.
+  },
+  'TellerManager' : {
+    'CreateTeller' : 'tellermanagaer_create_teller', //new teller created by system.
+    'Increase' : 'tellermanager_increase' //Speaker Calls new customer.
+  },
+  'Teller' : {
+    'StateBusy' : 'teller_state_busy', //Teller becomes busy.
+    'StateFree' : 'teller_state_free' //Teller becomes free.
+  },
+  'Queue' : {
+    'log' : 'queue_log' //just logging customer queue state.
+  },
+  'NumberingMachine' : {
+    'Increase' : 'numberingmachine_increase' //customer gets new number from numbering machine.
+  },
+  'SimulationEngine' : {
+    'Start' : 'simulation_start', //simulation started.
+    'Finish' : 'simulation_finish' // simulation finished.
+  }
 };
 
 /**
@@ -150,6 +206,7 @@ TellerManager = {
    * and push it into the this.tellers array
    */
   'createTeller' : function() {
+    LOG.debug('called TellerManager.createTeller()');
     var teller = new Teller(this.tellers.length + 1);
     this.tellers.push(teller);
   },
@@ -158,8 +215,9 @@ TellerManager = {
    * Get a teller object by its id
    */
   'getTeller' : function(tellerid) {
-    if (typeof(this.tellers[tellerid]) != 'undefined') {
-      return this.tellers[tellerid];
+    LOG.debug('called TellerManager.getTeller(' + tellerid + ')');
+    if (typeof(this.tellers[tellerid - 1]) != 'undefined') {
+      return this.tellers[tellerid - 1];
     }
     else {
       return false;
@@ -170,12 +228,18 @@ TellerManager = {
    * Get array of all free tellers.
    */
   'getFreeTellers' : function() {
+    LOG.debug('called TellerManager.getFreeTellers()');
     var result = [];
-    for (var teller1 in this.tellers) {
+    //for (var teller1 in this.tellers) {
+    //  if (teller1.state == TellerState.Free) {
+    //    result.push(teller1);
+    //  }
+    //}
+    this.tellers.forEach(function(teller1) {
       if (teller1.state == TellerState.Free) {
         result.push(teller1);
       }
-    }
+    });
     return result;
   },
 
@@ -183,12 +247,18 @@ TellerManager = {
    * get an array of customer numbers than gat get service.
    */
   'getWaitingNumbers' : function() {
+    LOG.debug('called TellerManager.getWaitingNumbers()');
     var result = [];
-    for (var teller1 in this.tellers) {
+    //for (var teller1 in this.tellers) {
+    //  if (teller1.state == TellerState.Free) {
+    //    result.push(teller1.customerid);
+    //  }
+    //}
+    this.tellers.forEach(function(teller1) {
       if (teller1.state == TellerState.Free) {
         result.push(teller1.customerid);
       }
-    }
+    });
     return result;
   },
 
@@ -196,10 +266,14 @@ TellerManager = {
    * Check if a given customer id can get service now
    */
   'searchForWaitingCustomer' : function(customerid) {
-    return(typeof(this.getWaitingNumbers()[customerid]) != 'undefined');
+    LOG.debug('called TellerManager.searchForWaitingCustomer(' + customerid + ')');
+    var waitingNumbers = this.getWaitingNumbers();
+    return (waitingNumbers.indexOf(customerid) >= 0);
+    //return(typeof(waitingNumbers[customerid]) != 'undefined');
   },
 
   'increaseNumber' : function() {
+    LOG.debug('called TellerManager.increaseNumber()');
     return ++this.lastnumber;
   }
 };
@@ -212,10 +286,12 @@ NumberingMachine = {
   'number' : 0,
   
   'getNumber' : function() {
+    LOG.debug('called NumberingMachine.getNumber()');
     return this.number;
   },
   
   'increase' : function() {
+    LOG.debug('called NumberingMachine.increase()');
     return ++this.number;
   }
 };
@@ -224,6 +300,7 @@ NumberingMachine = {
  * Constructor
  */
 function Teller(id) {
+  LOG.debug('called new Teller(' + id + ')');
   this.tellerid = id; //Should be set by caller
 
   //Set number to a new customer, and set state to Free
@@ -232,7 +309,7 @@ function Teller(id) {
   this.customerid = TellerManager.increaseNumber();
   
   //@internal
-  this.lastChangeTime = time();
+  this.lastChangeTime = CLOCK;
   this.totalFreeTime = 0;
   this.totalBusyTime = 0;
   
@@ -246,10 +323,10 @@ function Teller(id) {
     }
     
     //calculate total free time
-    this.totalFreeTime += (time() - this.lastChangeTime);
+    this.totalFreeTime += (CLOCK - this.lastChangeTime);
     
     //update state and last change time
-    this.lastChangeTime = time();
+    this.lastChangeTime = CLOCK;
     this.state = TellerState.Busy;
     this.customerid = customerid;
     return true;
@@ -265,12 +342,12 @@ function Teller(id) {
     }
     
     //calculate total busy time
-    this.totalBusyTime += (time() - this.lastChangeTime);
+    this.totalBusyTime += (CLOCK - this.lastChangeTime);
     
     //update state and last change time
-    this.lastChangeTime = time();
+    this.lastChangeTime = CLOCK;
     this.state = TellerState.Free;
-    this.customerid = TellerManager.increase();
+    this.customerid = TellerManager.increaseNumber();
     return true;
   };
   
@@ -280,7 +357,7 @@ function Teller(id) {
   this.getTotalFreeTime = function() {
     var curr = 0;
     if (this.state == TellerState.Free) {
-      curr = time() - this.lastChangeTime;
+      curr = CLOCK - this.lastChangeTime;
     }
     
     return curr + this.totalFreeTime;
@@ -292,7 +369,7 @@ function Teller(id) {
   this.getTotalBusyTime = function() {
     var curr = 0;
     if (this.state == TellerState.Busy) {
-      curr = time() - this.lastChangeTime;
+      curr = CLOCK - this.lastChangeTime;
     }
     
     return curr + this.totalBusyTime;
@@ -304,10 +381,14 @@ function Teller(id) {
  */
 function Customer() {
   this.customerid = NumberingMachine.increase();
+
+  //Save this customer to AllCustomers for later reference.
+  AllCustomers[this.customerid] = this;
+
   this.tellerid = 0; //should be set by caller when customer gets service.
   this.state = CustomerState.WaitingForService;
   
-  this.enterTime = time();
+  this.enterTime = CLOCK;
   this.inServiceTime = null;
   this.exitTime = null;
   
@@ -315,7 +396,7 @@ function Customer() {
    * Set state to InService
    */
   this.setStateInService = function() {
-    this.inServiceTime = time();
+    this.inServiceTime = CLOCK;
     this.state = CustomerState.InService;
   };
   
@@ -323,7 +404,7 @@ function Customer() {
    * Set state to FinishedJob
    */
   this.setStateFinishedJob = function() {
-    this.exitTime = time();
+    this.exitTime = CLOCK;
     this.state = CustomerState.FinishedJob;
   };
   
@@ -344,6 +425,8 @@ CustomerQueue = new Queue();
  * Start the simulation process
  */
 function start_simulate() {
+  SIMULATION_STARTED = true;
+
   //Initialize variables
   var duration = Number($('#duration').val())
   , arrivaltable = $('#arrivaltable').val()
@@ -357,9 +440,8 @@ function start_simulate() {
   
   //convert arrival table into a queue
   var arrivalTableQueue = new Queue();
-  var item;
-  while (item = arrivaltable.pop()) {
-    arrivalTableQueue.enqueue(item)
+  for (var i = 0; i < arrivaltable.length; i++) {
+    arrivalTableQueue.enqueue(arrivaltable[i]);
   }
   
   //store snapshots of the system state whenever a new event occurs.
@@ -371,34 +453,67 @@ function start_simulate() {
     TellerManager.createTeller();
   }
   
-  //start the simulation clock (it stores the time in minutes and increases one minute per step)
-  var clock, customer;
-  for (clock = 0; clock <= duration; clock++) {
+  //start the simulation CLOCK (it stores the time in minutes and increases one minute per step)
+  var customer;
+  for (CLOCK = 0; CLOCK <= duration; CLOCK++) {
     
     //Check if customer enters
-    if (arrivalTableQueue.peek() == clock) {
-      //new cusomer enters.
+    var new_arrival = arrivalTableQueue.peek();
+    if (new_arrival == CLOCK) {
+      //new customer enters.
       customer = new Customer();
       CustomerQueue.enqueue(customer);
       
       //customer has entered. remove it from arrivale table queue.
       arrivalTableQueue.dequeue();
     }
-    
-    //Check for busy tellers which have finished their service and release them
-    
-    
-    //check if customer can get service
-    while (TellerManager.searchForWaitingCustomer(CustomerQueue.peek().customerid)) {
-      //customer can get service
-      customer = CustomerQueue.dequeue();
-      customer.tellerid = TellerManager.getFreeTellers()[0];
-      customer.setStateInService();
 
-      var theTeller = TellerManager.getTeller(customer.tellerid);
-      theTeller.setStateBusy(customer.customerid);
+    //Check for finished jobs
+    TellerManager.tellers.forEach(function(teller1) {
+      if (teller1.state == TellerState.Busy) {
+        //check for critical error
+        if (typeof(AllCustomers[teller1.customerid]) == 'undefined') {
+          LOG.error('Critical: customer is not defined in AllCustomers. customerid=' +
+              teller1.customerid + ', tellerid=' + teller1.tellerid);
+          return;
+        }
+
+        var customer1 = AllCustomers[teller1.customerid];
+        var customer1_inservice_time = CLOCK - customer1.inServiceTime;
+        if (customer1_inservice_time == responsetimeave) {
+          //customer's job has been finished. clear resources.
+          customer1.setStateFinishedJob();
+          teller1.setStateFree();
+        }
+        else if (customer1_inservice_time > responsetimeave) {
+          //Normally This should not happen.
+          LOG.error("customer inservice wait time is greater than average response time" +
+              'customer1_inservice_time=' + customer1_inservice_time);
+        }
+      }
+    });
+
+    //check for customers that can get service
+    while (true) {
+      var last_customer = CustomerQueue.peek();
+      if (typeof(last_customer) == 'undefined') {
+        break;
+      }
+      var last_customer_can_get_service = TellerManager.searchForWaitingCustomer(last_customer.customerid);
+      if (last_customer_can_get_service) {
+        //customer can get service
+        customer = CustomerQueue.dequeue();
+        customer.tellerid = TellerManager.getFreeTellers()[0].tellerid;
+        customer.setStateInService();
+
+        var theTeller = TellerManager.getTeller(customer.tellerid);
+        theTeller.setStateBusy(customer.customerid);
+      }
+      else {
+        break;
+      }
     }
-    
+
     // now take a snapshot of system
     //mabe this shold be done on every change.
   }
