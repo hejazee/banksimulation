@@ -61,6 +61,18 @@ LOG = {
         console.debug(msg);
         break;
     }
+  },
+  'log' : function() {
+    var msg = jQuery.makeArray(arguments).join("\n");
+    switch (logtype) {
+      case LOGTYPES.alert:
+        msg = "Log:\n\n" + msg;
+        alert(msg);
+        break;
+      case LOGTYPES.console:
+        console.log(msg);
+        break;
+    }
   }
 };
 
