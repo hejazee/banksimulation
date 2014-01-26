@@ -159,9 +159,24 @@ function SystemState_log(type, msg) {
   if (typeof(SystemStateLog[CLOCK]) == 'undefined') {
     SystemStateLog[CLOCK] = [];
   }
+
+  //if this is an object, its Queue object. we render it immediately
+  var newmsg;
+  if (typeof msg == 'object') {
+    if (msg.hasOwnProperty('getAll')) {
+      newmsg = RenderingEngine.renderQueue(msg);
+    }
+    else {
+      newmsg = msg;
+    }
+  }
+  else {
+    newmsg = msg;
+  }
   SystemStateLog[CLOCK][SystemStateLog[CLOCK].length] = {
-    'message' : msg,
-    'type' : type
+    'message' : newmsg,
+    'type' : type,
+    'clock' : CLOCK
   };
 }
 
@@ -187,8 +202,8 @@ function generateRandomTable() {
     //we want to generate a random time. it should be in the selected time span.
     //it should be near the previous number.
     max_time = prev_time + 5;
-    if (max_time > duration) {
-      max_time = duration;
+    if (max_time > duration - 5) {
+      max_time = duration - 5;
     }
     
     samp_time = getRandomInt(prev_time, max_time);
@@ -578,4 +593,6 @@ function start_simulate() {
 
   SystemState_log(SystemStateLogTypes.SimulationEngine.Finish, 'Simulation finished.');
   RenderingEngine.render(SystemStateLog);
+
+  jQuery('#results').html(RenderingEngine.getRenderedOutput());
 }
