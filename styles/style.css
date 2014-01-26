@@ -1,0 +1,167 @@
+body {
+  font-family: verdana, sans-serif;
+}
+#wrapper {
+  margin: 0 auto;
+  width: 90%;
+}
+
+#info {
+  text-align: center;
+  border: 1px solid green;
+  background-color: #b1d0f3;
+  margin-bottom: 30px;
+}
+#info p {
+  margin: 3px;
+}
+#info .info-inner {
+  font-size: 14px;
+  margin: 0 auto;
+  text-align: left;
+  width: 390px;
+}
+
+#settings {
+
+}
+#settings #duration {
+  margin-bottom: 20px;
+}
+#settings #arrivaltable {
+
+}
+#settings #generaterandom {
+
+}
+#settings #responsetimeave {
+
+}
+#settings #tellerscount {
+
+}
+#settings #startsimulate {
+  background-color: lightgreen;
+  padding: 15px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.settings-left {
+  float: left;
+}
+.settings-right {
+  float: left;
+  margin-left: 300px;
+  margin-top: 100px;
+}
+
+#results {
+  border: 1px solid #ddd;
+  padding: 5px;
+  margin-top: 30px;
+  clear: both;
+}
+
+/**
+ * Style for log data
+ */
+.label {
+  font-weight: bold;
+}
+.label:after {
+  content: ': ';
+}
+.value {
+
+}
+li {
+  padding: 5px 0;
+  margin: 10px 0;
+}
+ul.inline-ul {
+  padding: 0;
+}
+ul.inline-ul li {
+  display: inline;
+  list-style-type: none;
+  border: 1px solid #999;
+  padding: 0 5px;
+}
+
+li.clock_changed {
+  border: 1px solid #CCCCCC;
+  color: #FF0000;
+  font-family: verdana, sans-serif;
+  font-weight: bold;
+  list-style-type: none;
+  margin: 15px 0;
+  padding: 15px;
+  text-align: center;
+  background: #EEEEEE url('../images/clock.png') no-repeat left center;
+}
+li.customer_enter {
+  list-style-type: none;
+  padding: 25px 0 25px 48px;
+  background: #DCFEDA url('../images/customer.png') no-repeat left center;
+}
+li.customer_getservice {
+  list-style-type: none;
+  padding: 25px 0 25px 48px;
+  background: #00ff00 url('../images/customer.png') no-repeat left center;
+}
+li.customer_exit {
+  list-style-type: none;
+  padding: 25px 0 25px 48px;
+  background: #710909 url('../images/customer.png') no-repeat left center;
+  color: #fff;
+}
+li.tellermanagaer_create_teller {
+  list-style-type: none;
+  padding: 25px 0 25px 48px;
+  background: url('../images/tellermanager.png') no-repeat left center;
+  border: 1px solid #000;
+}
+li.tellermanager_increase {
+  list-style-type: none;
+  padding: 25px 0 25px 48px;
+  background: url('../images/speaker.png') no-repeat left center;
+  border: 1px solid #000;
+}
+li.tellermanager_listfree {
+  list-style-type: none;
+  padding: 25px 0 25px 48px;
+  background: url('../images/tellermanager.png') no-repeat left center;
+  border: 1px solid #000;
+}
+li.teller_state_busy {
+  list-style-type: none;
+  padding: 25px 0 25px 48px;
+  background: #d33682 url('../images/teller.png') no-repeat left center;
+}
+li.teller_state_free {
+  list-style-type: none;
+  padding: 25px 0 25px 48px;
+  background: #8ae234 url('../images/teller.png') no-repeat left center;
+}
+li.queue_log {
+  list-style-type: none;
+  padding: 25px 0 25px 100px;
+  background: #e0f2be url('../images/queue.jpg') no-repeat left center;
+}
+li.numberingmachine_increase {
+  list-style-type: none;
+  padding: 25px 0 25px 48px;
+  background: url('../images/numberingmachine.png') no-repeat left center;
+}
+li.simulation_start {
+  list-style-type: none;
+  border: 1px solid #000;
+}
+li.simulation_finish {
+  list-style-type: none;
+  border: 1px solid #000;
+}
+li.simulation_log {
+  margin-left: 50px;
+}

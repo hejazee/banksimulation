@@ -31,13 +31,23 @@
 </head>
 <body>
   <div id="wrapper">
+    <div id="info">
+      <h1>Bank Queue Simulation Project</h1>
+      <div class="info-inner">
+        <p><strong>By:</strong> Ahmad Hesamzadeh (Student no: 890215659)</p>
+        <p><strong>Professor:</strong> Dr. Sahba</p>
+        <p><strong>Date:</strong> (26 Jan 2014) (6 Bahman 1392)</p>
+      </div>
+      <h5>&copy; 2014 - Payamenoor University of Karaj - All rights reserved.</h5>
+    </div>
     <div id="settings">
-      <label for="duration">Duration: </label>
-      <input type="text" name="duration" id="duration" value="60" /> minutes
-      <br />
+      <div class="settings-left">
+        <label for="duration">Duration: </label>
+        <input type="text" name="duration" id="duration" value="60" /> minutes
+        <br />
 
-      <label for="arrivaltable">Customers arrival table: </label><br />
-      <textarea id="arrivaltable" name="arrivaltable" rows="30" cols="30">5
+        <label for="arrivaltable">Customers arrival table: </label><br />
+        <textarea id="arrivaltable" name="arrivaltable" rows="15" cols="30">5
 7
 8
 9
@@ -60,16 +70,19 @@
 45
 47
 53</textarea><br />
-      <button id="generaterandom">Generate random data</button><br />
-      
-      <label for="responsetimeave">Average response time: </label><br />
-      <input type="text" name="responsetimeave" id="responsetimeave" value="5" /> minutes.<br />
-      
-      <label for="tellerscount">Count of tellers: </label><br />
-      <input type="text" name="tellerscount" id="tellerscount" value="3" /><br /><br />
-      
-      <button id="startsimulate">Start simulation</button>
+        <button id="generaterandom">Generate random data</button><br />
+      </div>
+      <div class="settings-right">
+        <label for="responsetimeave">Average response time: </label><br />
+        <input type="text" name="responsetimeave" id="responsetimeave" value="5" /> minutes.<br />
+
+        <label for="tellerscount">Count of tellers: </label><br />
+        <input type="text" name="tellerscount" id="tellerscount" value="3" /><br /><br />
+
+        <button id="startsimulate">Start simulation</button>
+      </div>
     </div>
+    <div style="clear: both"></div>
     <div id="results">
     
     </div>
