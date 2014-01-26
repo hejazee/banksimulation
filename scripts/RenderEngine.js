@@ -113,11 +113,11 @@ RenderingEngine = {
       for (var i = 0; i <= queue_all.length - 1; i++) {
         var customer = queue_all[i];
         var customerid = customer.customerid;
-        var tellerid = customer.tellerid;
-        var state = customer.state;
+        //var tellerid = customer.tellerid;
+        //var state = customer.state;
         var enterTime = customer.enterTime;
-        var inServiceTime = customer.inServiceTime;
-        var exitTime = customer.exitTime;
+        //var inServiceTime = customer.inServiceTime;
+        //var exitTime = customer.exitTime;
 
         result += '<li>';
           result += '<ul>';
