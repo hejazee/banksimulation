@@ -589,7 +589,15 @@ function start_simulate() {
       if (last_customer_can_get_service) {
         //customer can get service
         customer = CustomerQueue.dequeue();
-        customer.tellerid = TellerManager.getFreeTellers()[0].tellerid;
+        var freeTellers = TellerManager.getFreeTellers();
+        var SelectedfreeTeller;
+        for (var freeTellerC = 0; freeTellerC < freeTellers.length; freeTellerC++) {
+          if (freeTellers[freeTellerC].customerid == customer.customerid) {
+            SelectedfreeTeller = freeTellers[freeTellerC];
+            break;
+          }
+        }
+        customer.tellerid = SelectedfreeTeller.tellerid;
         customer.setStateInService();
 
         //Log Queue
