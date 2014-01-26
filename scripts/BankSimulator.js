@@ -16,6 +16,7 @@
       }
       else {
         start_simulate();
+        jQuery('#summary').html(collect_summary());
       }
     });
   });
@@ -616,4 +617,119 @@ function start_simulate() {
   RenderingEngine.render(SystemStateLog);
 
   jQuery('#results').html(RenderingEngine.getRenderedOutput());
+}
+
+/**
+ * Collect final summary
+ */
+Statistics = {
+  'customers' : [],
+  'tellers' : []
+};
+
+function collect_summary() {
+  var result = '';
+  result += collect_summary_customers();
+  result += collect_summary_tellers();
+  result += collect_summary_overall();
+  return result;
+}
+
+/**
+ * Collect summary of customers
+ */
+function collect_summary_customers() {
+  var result = '<table>';
+  result += '<tr>' +
+      '<th>Customer id</th>' +
+      '<th>Enter Time</th>' +
+      '<th>Exit Time</th>' +
+      '<th>Total Wait time</th>' +
+      '</tr>';
+  for (var i = 0; i < AllCustomers.length; i++) {
+    var customer = AllCustomers[i];
+    if (typeof customer != 'object') {
+      continue;
+    }
+    result += '<tr>';
+    result += '<td>' + customer.customerid + '</td>';
+    Statistics.customers[customer.customerid] = {};
+    result += '<td>' + customer.enterTime + '</td>';
+    Statistics.customers[customer.customerid].enterTime = customer.enterTime;
+    result += '<td>' + customer.exitTime + '</td>';
+    Statistics.customers[customer.customerid].exitTime = customer.exitTime;
+    result += '<td>' + customer.getTotalWaitTime() + '</td>';
+    Statistics.customers[customer.customerid].TotalWaitTime = customer.getTotalWaitTime();
+    result += '</tr>';
+  }
+  result += '</table>';
+
+  return result;
+}
+
+/**
+ * Collect summary of actions
+ */
+function collect_summary_tellers() {
+  var result = '<table>';
+  result += '<tr>' +
+      '<th>Teller id</th>' +
+      '<th>Total Free Time</th>' +
+      '<th>Total Busy Time</th>' +
+      '</tr>';
+  for (var i = 0; i < TellerManager.tellers.length; i++) {
+    var teller = TellerManager.tellers[i];
+    if (typeof teller != 'object') {
+      continue;
+    }
+    result += '<tr>';
+    result += '<td>' + teller.tellerid + '</td>';
+    Statistics.tellers[teller.tellerid] = {};
+    result += '<td>' + teller.getTotalFreeTime() + '</td>';
+    Statistics.tellers[teller.tellerid].TotalFreeTime = teller.getTotalFreeTime();
+    result += '<td>' + teller.getTotalBusyTime() + '</td>';
+    Statistics.tellers[teller.tellerid].TotalBusyTime = teller.getTotalBusyTime();
+    result += '</tr>';
+  }
+  result += '</table>';
+
+  return result;
+}
+
+/**
+ * Collect overall summary
+ */
+function collect_summary_overall() {
+  var sum_customer_wait = 0,
+      sum_teller_free = 0,
+      sum_teller_busy = 0;
+  var average_customer_wait = 0,
+      average_teller_free = 0,
+      average_teller_busy = 0;
+
+  for (var count_customer = 1; count_customer < Statistics.customers.length; count_customer++) {
+    sum_customer_wait += Statistics.customers[count_customer].TotalWaitTime;
+  }
+  count_customer--;
+  //console.warn(sum_customer_wait);
+  //console.warn(count_customer);
+  average_customer_wait = sum_customer_wait / count_customer;
+
+  for (var count_teller = 1; count_teller < Statistics.tellers.length; count_teller++) {
+    sum_teller_free += Statistics.tellers[count_teller].TotalFreeTime;
+    sum_teller_busy += Statistics.tellers[count_teller].TotalBusyTime;
+  }
+  count_teller--;
+  //console.warn(sum_teller_free);
+  //console.warn(sum_teller_busy);
+  average_teller_busy = sum_teller_busy / count_teller;
+  average_teller_free = sum_teller_free / count_teller;
+
+  var result = '<ul>';
+  result += '<li>Average Customer wait tome: ' + average_customer_wait + '</li>' +
+      '<li>Average Teller Free time: ' + average_teller_free + '</li>' +
+      '<li>Average Teller Busy time: ' + average_teller_busy + '</li>';
+  result += '</ul>';
+
+  return result;
 }
