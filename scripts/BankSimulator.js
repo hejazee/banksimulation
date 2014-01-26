@@ -132,7 +132,8 @@ SystemStateLogTypes = {
   },
   'TellerManager' : {
     'CreateTeller' : 'tellermanagaer_create_teller', //new teller created by system.
-    'Increase' : 'tellermanager_increase' //Speaker Calls new customer.
+    'Increase' : 'tellermanager_increase', //Speaker Calls new customer.
+    'ListFreeTellers' : 'tellermanager_listfree'
   },
   'Teller' : {
     'StateBusy' : 'teller_state_busy', //Teller becomes busy.
@@ -379,6 +380,10 @@ function Teller(id) {
     SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "Total busy time is: " +
         this.getTotalBusyTime() + ' minutes.');
 
+    //Log free tellers
+    SystemState_log(SystemStateLogTypes.TellerManager.ListFreeTellers,
+        RenderingEngine.renderTellerArray(TellerManager.getFreeTellers()));
+
     return true;
   };
   
@@ -408,6 +413,10 @@ function Teller(id) {
         this.getTotalFreeTime() + ' minutes.');
     SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "Total busy time is: " +
         this.getTotalBusyTime() + ' minutes.');
+
+    //Log free tellers
+    SystemState_log(SystemStateLogTypes.TellerManager.ListFreeTellers,
+        RenderingEngine.renderTellerArray(TellerManager.getFreeTellers()));
 
     return true;
   };
@@ -491,8 +500,6 @@ function Customer() {
   //Log Customer enters the bank
   SystemState_log(SystemStateLogTypes.Customer.Enter, "New customer entered bank");
   SystemState_log(SystemStateLogTypes.SimulationEngine.Log, "Customer id: " + this.customerid);
-  //Log Queue
-  SystemState_log(SystemStateLogTypes.Queue.Log, CustomerQueue);
 }
 
 /**
@@ -539,7 +546,10 @@ function start_simulate() {
       //new customer enters.
       customer = new Customer();
       CustomerQueue.enqueue(customer);
-      
+
+      //Log Queue
+      SystemState_log(SystemStateLogTypes.Queue.Log, CustomerQueue);
+
       //customer has entered. remove it from arrival table queue.
       arrivalTableQueue.dequeue();
     }
@@ -581,6 +591,9 @@ function start_simulate() {
         customer = CustomerQueue.dequeue();
         customer.tellerid = TellerManager.getFreeTellers()[0].tellerid;
         customer.setStateInService();
+
+        //Log Queue
+        SystemState_log(SystemStateLogTypes.Queue.Log, CustomerQueue);
 
         var theTeller = TellerManager.getTeller(customer.tellerid);
         theTeller.setStateBusy(customer.customerid);

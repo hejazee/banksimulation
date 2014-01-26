@@ -51,6 +51,11 @@ RenderingEngine = {
           case SystemStateLogTypes.TellerManager.Increase:
             RenderingEngine.appendItem(message, type);
             break;
+          case SystemStateLogTypes.TellerManager.ListFreeTellers:
+            //message is a rendered array
+            RenderingEngine.appendItem("<p>Free tellers list</p>" + message, type);
+            break;
+            break;
           case SystemStateLogTypes.Teller.StateBusy:
             RenderingEngine.appendItem(message, type);
             break;
@@ -108,7 +113,7 @@ RenderingEngine = {
 
     //check if queue is empty
     if (!queue.isEmpty()) {
-      result = '<ul>';
+      result = '<ol>';
       var queue_all = queue.getAll();
       for (var i = 0; i <= queue_all.length - 1; i++) {
         var customer = queue_all[i];
@@ -120,7 +125,7 @@ RenderingEngine = {
         //var exitTime = customer.exitTime;
 
         result += '<li>';
-          result += '<ul>';
+          result += '<ul class="inline-ul">';
             result += '<li>';
               result += '<span class="label">ID</span>';
               result += '<span class="value">' + customerid + '</span>';
@@ -133,10 +138,44 @@ RenderingEngine = {
         result += '</li>';
       }
 
-      result += '</ul>';
+      result += '</ol>';
     }
     else {
       result += '<p>Customer queue is empty</p>';
+    }
+
+    return result;
+  },
+
+  'renderTellerArray' : function(tellerArr) {
+    var result = '';
+
+    //check if queue is empty
+    if (tellerArr.length > 0) {
+      result = '<ul>';
+      for (var i = 0; i <= tellerArr.length - 1; i++) {
+        var teller = tellerArr[i];
+        var tellerid = teller.tellerid;
+        var customerid = teller.customerid;
+
+        result += '<li>';
+          result += '<ul class="inline-ul">';
+            result += '<li>';
+              result += '<span class="label">ID</span>';
+              result += '<span class="value">' + tellerid + '</span>';
+            result += '</li>';
+            result += '<li>';
+              result += '<span class="label">Customer Number</span>';
+              result += '<span class="value">' + customerid + '</span>';
+            result += '</li>';
+          result += '</ul>';
+        result += '</li>';
+      }
+
+      result += '</ul>';
+    }
+    else {
+      result += '<p>Teller array is empty</p>';
     }
 
     return result;
